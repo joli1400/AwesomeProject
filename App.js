@@ -55,8 +55,12 @@ export default function App() {
           tabBarActiveTintColor: '#3A5743',
           tabBarInactiveTintColor: '#AABA9E',
           tabBarShowLabel: false,
-          // headerShown: false
-          headerShown: route.name === 'Map' ? false : true
+          headerShown: route.name === 'Map' ? false : true,
+          headerTitleAlign: 'center',
+          headerTintColor: '#3A5743',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
         })}
       >
         <Tab.Screen name="Settings" component={SettingsScreen} />
