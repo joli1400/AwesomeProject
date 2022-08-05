@@ -55,6 +55,7 @@ export default function App() {
           tabBarActiveTintColor: '#3A5743',
           tabBarInactiveTintColor: '#AABA9E',
           tabBarShowLabel: false,
+          //headerstuff
           headerShown: route.name === 'Map' ? false : true,
           headerTitleAlign: 'center',
           headerTintColor: '#3A5743',
