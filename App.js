@@ -1,22 +1,93 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Platform, StyleSheet, Text, View, Dimensions } from 'react-native';
+import MapView from 'react-native-maps';
+import { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 function SettingsScreen() {
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
+
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
+
+        let location = await Location.watchPositionAsync({ accuracy: Location.Accuracy.Lowest,  distanceInterval: 2000 }, loc => setLocation(JSON.parse(JSON.stringify(loc.coords))));;
+        setLocation(location);
+      })();
+    }, []);
+
+    let text = 'Waiting..';
+    let pos_lat = "test";
+    let pos_lon = "test";
+    if (errorMsg) {
+      text = errorMsg;
+    } else if (location) {
+      text = JSON.stringify(location);
+      pos_lat = location.latitude;
+      pos_lon = location.longitude;
+    }
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
+      <Text>{pos_lat}!</Text>
     </View>
   );
 }
 
 function MapScreen() {
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
+
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
+
+        let location = await Location.watchPositionAsync({ accuracy: Location.Accuracy.Lowest,  distanceInterval: 2000 }, loc => setLocation(JSON.parse(JSON.stringify(loc.coords))));;
+        setLocation(location);
+      })();
+    }, []);
+
+    let text = 'Waiting..';
+    let pos_lat = 0;
+    let pos_lon = 0;
+    if (errorMsg) {
+      text = errorMsg;
+    } else if (location) {
+      text = JSON.stringify(location);
+      pos_lat = location.latitude;
+      pos_lon = location.longitude;
+    }
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Map!</Text>
-    </View>
+      <View style={styles.container}>
+        <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: 62.390716,
+              longitude: 17.307545,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+        >
+            <Marker
+              coordinate={{ latitude : 62.3907296, longitude : 17.3098381 }}
+            />
+            <Marker
+              coordinate={{ latitude : pos_lat, longitude : pos_lon }}
+            />
+        </MapView>
+      </View>
   );
 }
 
@@ -71,3 +142,16 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+});
